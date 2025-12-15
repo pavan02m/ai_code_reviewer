@@ -29,7 +29,7 @@ export const AppSidebar = () => {
     ];
 
     const isActive = (url: string) => {
-        return pathname === url || pathname.startsWith("/dashboard");
+        return pathname === url || pathname.startsWith(url + "/dashboard");
     }
 
     if (!mounted || !session) return null;
@@ -65,7 +65,7 @@ export const AppSidebar = () => {
                             <SidebarMenuButton
                                 asChild
                                 tooltip={item.title}
-                                className={`h-10 px-4 ${isActive(item.href) ? 'bg-sidebar-hover text-sidebar-foreground' : 'text-sidebar-foreground/70 hover:bg-sidebar-hover hover:text-sidebar-foreground'} `}
+                                className={`h-10 px-4 ${isActive(item.href) ? 'bg-sidebar-accent text-sidebar-foreground' : 'text-sidebar-foreground/70 hover:bg-sidebar-hover hover:text-sidebar-foreground'} `}
                             >
                                 <Link href={item.href} className="flex items-center gap-3 w-full">
                                     <item.icon className="h-5 w-5 shrink-0"/>
@@ -95,8 +95,22 @@ export const AppSidebar = () => {
                                     </div>
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start" className="w-40">
+                            <DropdownMenuContent align="end" side="right" className="w-60">
+                                <div className="flex items-center gap-3 px-3 py-2 border-b mb-2">
+                                    <Avatar className="w-8 h-8">
+                                        {user.image ? (
+                                            <AvatarImage src={user.image} alt={userName} />
+                                        ) : (
+                                            <AvatarFallback>{userInitials}</AvatarFallback>
+                                        )}
+                                    </Avatar>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-sidebar-foreground/90">{userName}</p>
+                                        <p className="text-xs text-sidebar-foreground/70">@{userEmail}</p>
+                                    </div>
+                                </div>
                                 <DropdownMenuItem
+                                    className={`w-full flex items-center gap-3 px-3 py-2 border-b mb`}
                                     onClick={() => {
                                         const newTheme = theme === 'light' ? 'dark' : 'light';
                                         setTheme(newTheme);
@@ -104,16 +118,16 @@ export const AppSidebar = () => {
                                 >
                                     {theme === 'light' ?
                                         <>
-                                            <MoonIcon className="w-5 h-5" />
+                                            <MoonIcon className="w-5 h-5 shrink-0" />
                                             Dark Mode
                                         </>
                                         : <>
-                                            <SunIcon className="w-5 h-5" />
+                                            <SunIcon className="w-5 h-5 shrink-0 " />
                                             Light Mode
                                         </>}
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <LogOut className="w-5 h-5 mt-3 shrink-0" />
+                                <DropdownMenuItem className={`w-full flex items-center gap-3 px-3 py-2`}>
+                                    <LogOut className="w-5 h-5 shrink-0" />
                                     <Logout>
                                         Sign Out
                                     </Logout>
