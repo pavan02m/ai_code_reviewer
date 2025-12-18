@@ -4,7 +4,7 @@ import {fetchUserContributions, getGithubToken} from "@/module/github/lib/github
 import {auth} from "@/lib/auth";
 import {headers} from "next/headers";
 import {Octokit} from "octokit";
-import prisma from "@/lib/db";
+import {username} from "better-auth/plugins";
 
 export const getDashboardData = async () => {
     try {
@@ -162,4 +162,52 @@ const generateSampleReviewsPerMonth = () => {
     }
 
     return sampleData;
+}
+export async function getContributionStats() {
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers(),
+        });
+
+        if (!session?.user) {
+            throw new Error("Unauthorized");
+        }
+
+        const token = await getGithubToken();
+        if (!token) {
+            throw new Error("No GitHub token found");
+        }
+
+        // Get the actual GitHub username from the GitHub API
+        const octokit = new Octokit({ auth: token });
+
+        const { data: user } = await octokit.rest.users.getAuthenticated();
+        const username = user.login;
+
+        console.log(user + " is fetching contribution stats.");
+        console.log(token);
+
+        const calendar = await fetchUserContributions(username, token);
+
+        if (!calendar) {
+            return null;
+        }
+
+        const contributions = calendar.weeks.flatMap((week: any) =>
+            week.contributionDays.map((day: any) => ({
+                date: day.date,
+                count: day.contributionCount,
+                level: Math.min(4, Math.floor(day.contributionCount / 3)), // Convert to 0-4 scale
+            }))
+        )
+
+        return {
+            contributions,
+            totalContributions:calendar.totalContributions
+        }
+
+    } catch (error) {
+        console.error("Error fetching contribution stats:", error);
+        return null;
+    }
 }
