@@ -3,7 +3,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {useQuery} from "@tanstack/react-query";
 import {getMonthlyActivity} from "@/module/dashboard/actions";
 import {Spinner} from "@/components/ui/spinner";
-import {Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis} from "recharts";
 import {ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent} from "@/components/ui/chart";
 
 const ActivityChart = () => {

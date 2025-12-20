@@ -77,6 +77,52 @@ export const fetchUserContributions = async (username: string, token: string) =>
     }
 }
 
+export const getRepositories = async (page: number = 1, perPage: number = 10) => {
+    const token = await getGithubToken();
+
+    const {data} = await (new Octokit({auth: token})).rest.repos.listForAuthenticatedUser({
+        sort: 'updated',
+        direction: 'desc',
+        page: page,
+        per_page: perPage,
+        visibility: 'all',
+        affiliation: 'owner,collaborator,organization_member',
+    });
+
+    return data;
+}
+
+export const createWebHook = async (owner : string, repo: string) => {
+    const token = await getGithubToken();
+
+    const octokit = new Octokit({auth: token});
+
+    const webHookURL = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/github`;
+
+    const {data : hooks} = await octokit.rest.repos.listWebhooks({
+        owner,
+        repo,
+    });
+
+    const existingWebHookURL = hooks.find(hook => hook.config.url === webHookURL);
+
+    if(existingWebHookURL){
+        return existingWebHookURL;
+    }
+
+    const {data} = await octokit.rest.repos.createWebhook({
+        owner,
+        repo,
+        config: {
+            url: webHookURL,
+            content_type: 'json',
+        },
+        events: ['pull_request', 'push', 'pull_request_review'],
+    });
+
+    return data;
+}
+
 
 
 
