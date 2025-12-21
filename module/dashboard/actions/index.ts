@@ -184,9 +184,6 @@ export async function getContributionStats() {
         const { data: user } = await octokit.rest.users.getAuthenticated();
         const username = user.login;
 
-        console.log(user + " is fetching contribution stats.");
-        console.log(token);
-
         const calendar = await fetchUserContributions(username, token);
 
         if (!calendar) {
