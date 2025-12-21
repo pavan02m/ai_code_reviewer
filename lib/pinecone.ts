@@ -4,4 +4,4 @@ export const pinecone = new Pinecone({
     apiKey: process.env.PINECONE_DB_API_KEY!,
 });
 
-export const pinecodeIndex = pinecone.index("ai-code-reviewer-vector-embedding-v1");
+export const pinecodeIndex = pinecone.index("ai-code-reviewer-vector-embedding-v2");

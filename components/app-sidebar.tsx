@@ -25,7 +25,7 @@ export const AppSidebar = () => {
         { title: 'Repository', href: '/dashboard/repository', icon: Github },
         { title: 'Reviews', href: '/dashboard/reviews', icon: BookOpen },
         { title: 'Subscription', href: '/dashboard/subscription', icon: HandCoins },
-        { title: 'Setting', href: '/dashboard/settings', icon: Settings2 },
+        { title: 'Settings', href: '/dashboard/settings', icon: Settings2 },
     ];
 
     const isActive = (url: string) => {

@@ -2,6 +2,7 @@ import {Octokit} from 'octokit';
 import {auth} from '@/lib/auth'
 import prisma from "@/lib/db";
 import {headers} from "next/headers";
+import {string} from "zod";
 
 export const getGithubToken = async (): Promise<string | null> => {
     const session = await auth.api.getSession({
@@ -151,7 +152,80 @@ export const deleteWebHook = async (owner : string, repo: string) => {
     return false;
 }
 
+export const getRepoFileContents = async (accessToken: string, owner: string, repo: string, path: string = ""):Promise<{
+    path: string,
+    content: string
+}[]> => {
+    const octokit = new Octokit({auth : accessToken});
 
+    const {data} = await octokit.rest.repos.getContent({
+        owner,
+        repo,
+        path
+    });
+    if(!Array.isArray(data)){
+        if(data.type === "file" && data.content){
+            return [{
+                path: data.path,
+                content: Buffer.from(data.content, 'base64').toString('utf-8'),
+            }]
+        }
+        return [];
+    }
+
+    let files : {path: string, content: string}[] = [];
+
+    for(const item of data){
+        if(item.type === "file"){
+            const {data: fileData} = await octokit.rest.repos.getContent({
+                owner,
+                repo,
+                path: item.path,
+            })
+            if (!Array.isArray(fileData) && fileData.type === "file" && fileData.content) {
+                // Filter out non-code files if needed (images, etc.)
+                // For now, let's include everything that looks like text
+                if (!item.path.match(/\.(png|ipglipeg|gif|svg|ico|pdf|zip|tar|gz)$/i)) {
+                    files.push({
+                        path: item.path,
+                        content: Buffer.from(fileData.content, "base64").toString("utf-8"),
+                    });
+                }
+            }
+        }else if(item.type === "dir"){
+            const subFiles = await getRepoFileContents(accessToken, owner, repo, item.path);
+            files.push(...subFiles);
+        }
+    }
+
+    return files;
+}
+
+
+export const getPullrequestDiff = async (token : string, owner : string, repo : string, prNumber : number) => {
+    const octokit = new Octokit({auth: token});
+
+    const {data:pr} = await octokit.rest.pulls.get({
+        owner,
+        repo,
+        pull_number: prNumber,
+    });
+
+    const {data : diff} = await octokit.rest.pulls.get({
+        owner,
+        repo,
+        pull_number: prNumber,
+        mediaType :{
+            format:"diff"
+        }
+    });
+
+    return {
+        diff: diff as unknown as string,
+        title: pr.title,
+        description: pr.body || "",
+    }
+}
 
 
 
