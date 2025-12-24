@@ -8,7 +8,7 @@ import prisma from "@/lib/db";
 
 export const generateReview = inngest.createFunction(
     {id : "generate-review", concurrency: 5},
-    {event : "pr.review.request"},
+    {event : "pr.preview.requested"},
     async ({event, step}) => {
         const {owner, repo, prNumber , userId} = event.data;
 
