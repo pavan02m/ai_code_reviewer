@@ -2,7 +2,6 @@ import {Octokit} from 'octokit';
 import {auth} from '@/lib/auth'
 import prisma from "@/lib/db";
 import {headers} from "next/headers";
-import {string} from "zod";
 
 export const getGithubToken = async (): Promise<string | null> => {
     const session = await auth.api.getSession({
@@ -225,6 +224,17 @@ export const getPullrequestDiff = async (token : string, owner : string, repo : 
         title: pr.title,
         description: pr.body || "",
     }
+}
+
+export const postReviewComment = async (token: string, owner : string, repo : string, prNumber : number, review : string) => {
+    const octokit = new Octokit({auth: token});
+
+    await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number : prNumber,
+        body : `## 🤖🤖 AI CODE REVIEW \n\n ${review} \n\n --- \n*Powered by AI CODE REVIEWER`,
+    })
 }
 
 

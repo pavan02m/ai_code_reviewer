@@ -47,7 +47,7 @@ export const indexCodebase = async (repoId: string, files:{path:string, content:
     console.log("Indexing completed successfully");
 }
 
-export const retrieveContext = async (query : string, repoId: string, topK : number) => {
+export const retrieveContext = async (query : string, repoId: string, topK : number = 5) => {
     const embedding = await generateEmbedding(query);
 
     const results = await pinecodeIndex.query({
