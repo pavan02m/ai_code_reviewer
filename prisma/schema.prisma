@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -14,19 +13,34 @@ model Test {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  repositories  Repository[]
+  id                 String       @id
+  name               String
+  email              String
+  emailVerified      Boolean      @default(false)
+  image              String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+  repositories       Repository[]
+  usage              UserUsage?
+  subscriptionTier   String       @default("FREE")
+  subscriptionStatus String? // ACTIVE, CANCELLED, EXPIRED
 
   @@unique([email])
   @@map("user")
+}
+
+model UserUsage {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  repositoryCount Int      @default(0)
+  reviewsCount    Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("user_usage")
 }
 
 model Repository {
@@ -37,7 +51,7 @@ model Repository {
   url       String
   fullName  String
   userId    String
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   reviews   Review[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -47,16 +61,16 @@ model Repository {
 }
 
 model Review {
-  id             String @id @default(cuid())
-  repositoryId   String
-  repository     Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
-  prNumber       Int
-  prTitle        String
-  prUrl          String
-  review         String @db.Text
-  status         String @default("Completed")  // Completed , Failed , Pending
-  createAt       DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String     @id @default(cuid())
+  repositoryId String
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  prNumber     Int
+  prTitle      String
+  prUrl        String
+  review       String     @db.Text
+  status       String     @default("Completed") // Completed , Failed , Pending
+  createAt     DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@index([repositoryId])
   @@map("review")

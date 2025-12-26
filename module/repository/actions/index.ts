@@ -5,6 +5,7 @@ import {headers} from "next/headers";
 import {createWebHook, getRepositories} from "@/module/github/lib/github";
 import {randomUUID} from "node:crypto";
 import {inngest} from "@/inngest/client";
+import {canConnectRepository, incrementRepositoryCount} from "@/module/payment/lib/subscription";
 
 export  const fetchRepositories = async (page: number = 1, perPage:number = 10) => {
     const session = await auth.api.getSession({
@@ -12,6 +13,11 @@ export  const fetchRepositories = async (page: number = 1, perPage:number = 10) 
     });
     if (!session?.user) {
         throw new Error("Unauthorized");
+    }
+
+    const canConnect = canConnectRepository(session.user.id);
+    if(!canConnect){
+        throw new Error("Repository limit reached , please upgrade the plan to connect more repositories");
     }
 
     const repositories = await getRepositories(page, perPage);
@@ -51,23 +57,24 @@ export const connectRepository = async (owner: string, repo: string, githubId: b
                 url:`https://github.com/${owner}/${repo}`,
             }
         });
-    }
-
-    // TODO : REPOSITORY COUNT TO UPDATE USAGE
 
 
-    // TODO: TRIGGER REPOSITORY INDEXING FOR RAG()
-    try {
-        await inngest.send({
-            name:"repository.connected",
-            data:{
-                owner,
-                repo,
-                userId: session.user.id
-            }
-        })
-    } catch (error) {
-        console.error("Failed to trigger repository indexing", error);
+        // TODO : REPOSITORY COUNT TO UPDATE USAGE
+        await incrementRepositoryCount(session.user.id);
+
+        // TODO: TRIGGER REPOSITORY INDEXING FOR RAG()
+        try {
+            await inngest.send({
+                name:"repository.connected",
+                data:{
+                    owner,
+                    repo,
+                    userId: session.user.id
+                }
+            })
+        } catch (error) {
+            console.error("Failed to trigger repository indexing", error);
+        }
     }
 
     return webHook;
