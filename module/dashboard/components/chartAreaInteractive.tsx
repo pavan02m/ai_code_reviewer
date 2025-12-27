@@ -6,6 +6,7 @@ import {useQuery} from "@tanstack/react-query";
 import {getContributionStats} from "@/module/dashboard/actions";
 import {ActivityCalendar} from "react-activity-calendar";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Spinner} from "@/components/ui/spinner";
 
 export function ContributionChart() {
     const {theme} = useTheme();
@@ -22,7 +23,8 @@ export function ContributionChart() {
                     <CardTitle>Contribution Activity</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center p-8">
-                    <div className="text-muted-foreground">
+                    <div className="flex items-center flex-col justify-center min-h-[400px]">
+                        <Spinner className="size-6"/>
                         Loading contribution data...
                     </div>
                 </CardContent>

@@ -5,6 +5,7 @@ import {auth} from "@/lib/auth";
 import {headers} from "next/headers";
 import {Octokit} from "octokit";
 import {username} from "better-auth/plugins";
+import prisma from "@/lib/db";
 
 export const getDashboardData = async () => {
     try {
@@ -25,7 +26,7 @@ export const getDashboardData = async () => {
         const {data: user} = await octokit.rest.users.getAuthenticated();
 
         // Total Repositories
-        const totalRepos = 20;
+        const totalRepos = user.total_private_repos! + user.public_repos;
 
         //Calculate total commits from contribution calendar
         const calendarData = await fetchUserContributions(user.login, token);
@@ -41,7 +42,15 @@ export const getDashboardData = async () => {
         const totalPRs = prs.total_count || 0;
 
         //Count AI Reviews from our database
-        const totalAiReviewsCount = 0;
+        const totalAiReviewsCount = await prisma.review.count({
+            where :{
+                repository : {
+                    user :{
+                        id: session?.user?.id,
+                    }
+                }
+            }
+        })
 
         return {
             totalCommits,

@@ -59,8 +59,13 @@ export const generateReview = inngest.createFunction(
                             3. **Summary**: Brief overview.
                             4. **Strengths**: What's done well.
                             5. **Issues**: Bugs, security concerns, code smells.
-                            6. **Suggestions**: Specific code improvements.
-                            7. **Poem**: A short, creative poem summarizing the changes at the very end.
+                            6.**severity (any one of the following)**:
+                                - info: Nice-to-know or optional improvement
+                                - minor: Small issue, low risk
+                                - major: Logic flaw, maintainability or performance risk
+                                - critical: Security, data integrity, or production-breaking issue
+                            7. **Suggestions**: Specific code improvements.
+                            8. **Poem**: A short, creative poem summarizing the changes at the very end.
                             
                             Format your response in markdown.`;
 

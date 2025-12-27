@@ -95,7 +95,7 @@ export const AppSidebar = () => {
                                     </div>
                                 </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" side="right" className="w-60">
+                            <DropdownMenuContent align="end" side="top" className="w-60">
                                 <div className="flex items-center gap-3 px-3 py-2 border-b mb-2">
                                     <Avatar className="w-8 h-8">
                                         {user.image ? (
