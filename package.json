@@ -44,7 +44,7 @@
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@tanstack/react-query": "^5.90.12",
     "@xyflow/react": "^12.10.0",
-    "ai": "4.1.34",
+    "ai": "6.0.3",
     "@ai-sdk/google": "1.1.8",
     "better-auth": "^1.4.9",
     "class-variance-authority": "^0.7.1",
