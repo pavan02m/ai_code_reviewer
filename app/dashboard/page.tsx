@@ -1,16 +1,5 @@
 'use client';
 import React from 'react';
-import { Badge } from "@/components/ui/badge"
-import {
-    Card,
-    CardAction,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { GitCommit, GitPullRequest, MessageSquare, GitBranch } from "lucide-react"
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardData , getMonthlyActivity } from "@/module/dashboard/actions";
 import SectionCard from "@/module/dashboard/components/sectionCard";

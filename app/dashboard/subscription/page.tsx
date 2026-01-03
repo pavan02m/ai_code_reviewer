@@ -43,15 +43,15 @@ const PLAN_FEATURES = {
     ],
     PRO: [
         {
-            name: "Up to 5 repositories",
+            name: "Unlimited repositories",
             available: true,
         },
         {
-            name: "Up to 5 AI code reviews per repository",
+            name: "Unlimited AI code reviews per repository",
             available: true,
         },
         {
-            name: "Basic code review",
+            name: "Advanced code review",
             available: true,
         },
         {
@@ -158,6 +158,7 @@ const SubscriptionPage = () => {
             if(result.success){
                 toast.success("Subscription synced successfully");
                 refetch();
+                setSyncLoading(false);
             } else {
                 toast.error("Failed to sync subscription");
             }
@@ -413,7 +414,7 @@ const SubscriptionPage = () => {
                         }`}
                     >
                         {/* Badge */}
-                        {isPro ? (
+                        {isActive ? (
                             <Badge
                                 variant="secondary"
                                 className="absolute right-4 top-4"
