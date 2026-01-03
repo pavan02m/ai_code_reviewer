@@ -104,88 +104,93 @@ const RepositoryPage = () => {
                 />
             </div>
             <div className="grid gap-3">
-                {filteredRepositories.map((repository) => (
-                    <Card
-                        key={repository.id}
-                        className="group border transition-colors hover:bg-muted/30"
-                    >
-                        <CardContent className="px-4 py-3">
-                            <div className="flex items-start justify-between gap-4">
-                                {/* LEFT */}
-                                <div className="min-w-0">
-                                    {/* Title row */}
-                                    <div className="flex items-center gap-2 flex-wrap leading-tight">
-                                        <h3 className="text-xl font-medium truncate leading-tight">
-                                            {repository.name}
-                                        </h3>
+                {filteredRepositories.map((repository) => {
+                    const isConnecting = localConnectingId === repository.id;
 
-                                        <Badge variant="outline" className="text-xs h-5 px-2">
-                                            {repository.language || "Unknown"}
-                                        </Badge>
+                    return (
+                        <Card
+                            key={repository.id}
+                            className="group relative overflow-hidden transition-colors hover:bg-muted/30 py-3"
+                        >
+                            {/* LEFT STATUS BAR */}
+                            <div
+                                className={`absolute left-0 top-0 h-full w-1 rounded-r ${
+                                    isConnecting
+                                        ? "bg-muted-foreground"
+                                        : repository.isConnected
+                                            ? "bg-emerald-500"
+                                            : "bg-destructive"
+                                }`}
+                            />
 
-                                        {repository.isConnected ? (
-                                            <Badge className="text-xs h-5 p-3 bg-emerald-500/10 text-emerald-600">
-                                                Connected
+                            <CardContent className="px-4 py-3 pl-6">
+                                <div className="flex items-start justify-between gap-4">
+                                    {/* LEFT */}
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-2 flex-wrap leading-tight">
+                                            <h3 className="text-base font-medium truncate">
+                                                {repository.name}
+                                            </h3>
+
+                                            <Badge variant="outline" className="text-xs h-5 px-2">
+                                                {repository.language || "Unknown"}
                                             </Badge>
-                                        ) : (
-                                            <Badge variant="destructive">
-                                                Not connected
-                                            </Badge>
+
+                                            {repository.isConnected ? (
+                                                <Badge className="text-xs h-5 px-2 bg-emerald-500/10 text-emerald-600">
+                                                    Connected
+                                                </Badge>
+                                            ) : (
+                                                <Badge className="text-xs h-5 px-2 bg-destructive/10 text-destructive">
+                                                    Not connected
+                                                </Badge>
+                                            )}
+                                        </div>
+
+                                        {repository.description && (
+                                            <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                                                {repository.description}
+                                            </p>
                                         )}
                                     </div>
 
-                                    {/* Description */}
-                                    {repository.description && (
-                                        <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                                            {repository.description}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* RIGHT */}
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                        asChild
-                                    >
-                                        <a
-                                            href={repository.html_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                    {/* RIGHT */}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                            asChild
                                         >
-                                            <ExternalLink className="h-4 w-4" />
-                                        </a>
-                                    </Button>
+                                            <a
+                                                href={repository.html_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <ExternalLink className="h-4 w-4" />
+                                            </a>
+                                        </Button>
 
-                                    <Button
-                                        size="sm"
-                                        variant={
-                                            repository.isConnected
-                                                ? "outline"
-                                                : "default"
-                                        }
-                                        disabled={
-                                            repository.isConnected ||
-                                            localConnectingId === repository.id
-                                        }
-                                        onClick={() =>
-                                            handleConnectRepository(repository)
-                                        }
-                                    >
-                                        {localConnectingId === repository.id
-                                            ? "Connecting…"
-                                            : repository.isConnected
-                                                ? "Connected"
-                                                : "Connect"}
-                                    </Button>
+                                        <Button
+                                            size="sm"
+                                            variant={repository.isConnected ? "outline" : "default"}
+                                            disabled={repository.isConnected || isConnecting}
+                                            onClick={() => handleConnectRepository(repository)}
+                                        >
+                                            {isConnecting
+                                                ? "Connecting…"
+                                                : repository.isConnected
+                                                    ? "Connected"
+                                                    : "Connect"}
+                                        </Button>
+                                    </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
+
             <div ref={observerTarget} className="py-4">
                 {isFetchingNextPage && <RepositoryListSkeleton/>}
                 {
