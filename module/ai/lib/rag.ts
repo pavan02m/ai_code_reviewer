@@ -6,7 +6,9 @@ export const generateEmbedding = async (text:unknown) => {
     console.log("[generateEmbedding] raw input:", text);
 
     if (typeof text !== "string") {
-        throw new Error("generateEmbedding: input is not a string");
+        throw new Error(
+            `[generateEmbedding] expected string, got ${typeof text}`
+        );
     }
 
     const trimmed = text.trim();
