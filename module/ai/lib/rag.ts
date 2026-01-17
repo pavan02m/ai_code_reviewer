@@ -2,11 +2,20 @@ import {pinecodeIndex} from "@/lib/pinecone";
 import {embed} from "ai";
 import {google} from "@ai-sdk/google";
 
-export const generateEmbedding = async (text:string) => {
-        const {embedding} = await embed({
-            model: google.textEmbeddingModel("text-embedding-004"),
-            value: text,
-        })
+export const generateEmbedding = async (text:unknown) => {
+    if (typeof text !== "string") {
+        throw new Error("generateEmbedding: input is not a string");
+    }
+
+    const trimmed = text.trim();
+    if (trimmed.length === 0) {
+        throw new Error("generateEmbedding: input is empty");
+    }
+
+    const { embedding } = await embed({
+        model: google.textEmbeddingModel("text-embedding-004"),
+        value: trimmed,
+    });
 
     return embedding;
 }
