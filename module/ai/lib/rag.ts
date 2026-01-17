@@ -11,13 +11,32 @@ export const generateEmbedding = async (text:string) => {
     return embedding;
 }
 
-export const indexCodebase = async (repoId: string, files:{path:string, content:string}[]) => {
+
+function normalizeContent(
+    file: { path: string; content?: unknown }
+): string | null {
+    if (typeof file.content !== "string") return null;
+
+    const trimmed = file.content.trim();
+    if (trimmed.length === 0) return null;
+
+    return `File: ${file.path}\n\n${trimmed}`;
+}
+
+export const indexCodebase = async (repoId: string, files:{path:string, content?:unknown}[]) => {
     const vectors = [];
 
     for(const file of files) {
-        const content  = `File : ${file.path}\n\n${file.content}`;
 
-        const truncateContent  = content.slice(0, 8000);
+        const normalized = normalizeContent(file);
+
+        if (!normalized) {
+            console.warn(`Skipping ${file.path}: empty or invalid content`);
+            continue;
+        }
+        // const content  = `File : ${file.path}\n\n${file.content}`;
+
+        const truncateContent  = normalized.slice(0, 8000);
 
         try {
             const embedding = await generateEmbedding(truncateContent);
