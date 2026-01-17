@@ -13,7 +13,7 @@ export const generateEmbedding = async (text:unknown) => {
     }
 
     const { embedding } = await embed({
-        model: google.textEmbeddingModel("text-embedding-004"),
+        model: "openai/text-embedding-3-small",
         value: trimmed,
     });
 
