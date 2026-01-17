@@ -19,7 +19,7 @@ export const generateEmbedding = async (text:unknown) => {
     console.log("[generateEmbedding] embedding length:", trimmed.length);
 
     const { embedding } = await embed({
-        model: google.textEmbeddingModel("text-embedding-004"),
+        model: "google/text-embedding-004",
         value: trimmed,
     });
 
@@ -39,6 +39,8 @@ function normalizeContent(
 }
 
 export const indexCodebase = async (repoId: string, files:{path:string, content?:unknown}[]) => {
+
+    console.log("[indexCodebase] indexCodebase");
     const vectors = [];
 
     for(const file of files) {
