@@ -3,6 +3,8 @@ import {embed} from "ai";
 import {google} from "@ai-sdk/google";
 
 export const generateEmbedding = async (text:unknown) => {
+    console.log("[generateEmbedding] raw input:", text);
+
     if (typeof text !== "string") {
         throw new Error("generateEmbedding: input is not a string");
     }
@@ -12,8 +14,10 @@ export const generateEmbedding = async (text:unknown) => {
         throw new Error("generateEmbedding: input is empty");
     }
 
+    console.log("[generateEmbedding] embedding length:", trimmed.length);
+
     const { embedding } = await embed({
-        model: "openai/text-embedding-3-small",
+        model: google.textEmbeddingModel("text-embedding-004"),
         value: trimmed,
     });
 
@@ -47,8 +51,6 @@ export const indexCodebase = async (repoId: string, files:{path:string, content?
 
         const truncateContent  = normalized.slice(0, 8000);
 
-
-
         try {
             const embedding = await generateEmbedding(truncateContent);
             vectors.push({
@@ -80,6 +82,7 @@ export const indexCodebase = async (repoId: string, files:{path:string, content?
 export const retrieveContext = async (query : string, repoId: string, topK : number = 5) => {
 
     if (!query || query.trim().length === 0) {
+        console.warn("Skipping context retrieval: empty query");
         return [];
     }
     const embedding = await generateEmbedding(query);
