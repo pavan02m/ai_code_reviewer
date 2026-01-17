@@ -72,7 +72,7 @@ export const generateReview = inngest.createFunction(
                             Format your response in markdown.`;
 
             const {text} = await generateText({
-                model : "google/gemini-1.5-flash",
+                model: google("models/gemini-1.5-flash"),
                 prompt
             })
 

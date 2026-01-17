@@ -19,7 +19,7 @@ export const generateEmbedding = async (text:unknown) => {
     console.log("[generateEmbedding] embedding length:", trimmed.length);
 
     const { embedding } = await embed({
-        model: "google/text-embedding-004",
+        model: google.textEmbeddingModel("text-embedding-004"),
         value: trimmed,
     });
 
