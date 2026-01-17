@@ -39,7 +39,7 @@ function normalizeContent(
 }
 
 export const indexCodebase = async (repoId: string, files:{path:string, content?:unknown}[]) => {
-
+    console.log("[indexCodebase] indexCodebase");
     const vectors = [];
 
     for(const file of files) {
