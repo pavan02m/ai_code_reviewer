@@ -47,6 +47,8 @@ export const indexCodebase = async (repoId: string, files:{path:string, content?
 
         const truncateContent  = normalized.slice(0, 8000);
 
+
+
         try {
             const embedding = await generateEmbedding(truncateContent);
             vectors.push({
@@ -76,6 +78,10 @@ export const indexCodebase = async (repoId: string, files:{path:string, content?
 }
 
 export const retrieveContext = async (query : string, repoId: string, topK : number = 5) => {
+
+    if (!query || query.trim().length === 0) {
+        return [];
+    }
     const embedding = await generateEmbedding(query);
 
     const results = await pinecodeIndex.query({
@@ -84,7 +90,6 @@ export const retrieveContext = async (query : string, repoId: string, topK : num
         topK,
         includeMetadata: true,
     })
-
 
     return results.matches.map(match => match.metadata?.content as string).filter(Boolean);
 }
